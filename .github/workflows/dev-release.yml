@@ -1,0 +1,96 @@
+name: Build and Pre-release
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x gradlew
+
+      - name: Build Android APK
+        run: ./gradlew :composeApp:assembleDebug
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-apk
+          path: composeApp/build/outputs/apk/debug/*.apk
+
+  release:
+    needs: [build-android]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Download Android APK
+        uses: actions/download-artifact@v8
+        with:
+          name: android-apk
+          path: artifacts/android
+
+      - name: Generate commit list since last dev build
+        id: changelog
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --tags --force --prune
+          MARKER_TAG="dev-build-marker"
+
+          echo "## Changes since last dev build" > commits.md
+
+          if git rev-parse -q --verify "refs/tags/$MARKER_TAG" > /dev/null; then
+            RANGE="$MARKER_TAG..HEAD"
+            COUNT=$(git rev-list --count "$RANGE")
+            if [ "$COUNT" -gt 0 ]; then
+              git log --no-merges --pretty=format:'- %h %s (by %an, %cd)' --date=short "$RANGE" >> commits.md
+            else
+              echo "- No changes." >> commits.md
+            fi
+          else
+            # First dev build: show recent history (last 50 commits)
+            git log -n 50 --no-merges --pretty=format:'- %h %s (by %an, %cd)' --date=short >> commits.md
+          fi
+
+      - name: Create/Update Pre-release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: dev-latest
+          name: Latest Dev Build
+          prerelease: true
+          body_path: commits.md
+          files: |
+            artifacts/android/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update dev build marker tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          MARKER_TAG="dev-build-marker"
+          git tag -f "$MARKER_TAG" HEAD
+          git push origin -f "refs/tags/$MARKER_TAG"
