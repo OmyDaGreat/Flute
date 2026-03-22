@@ -14,35 +14,40 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.jetbrains.kmpapp.screens.DemoScreen
 import com.jetbrains.kmpapp.screens.EmptyScreenContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App() {
-    var showDemo by remember { mutableStateOf(false) }
+fun App(component: RootComponent) {
+    val childStack by component.stack.subscribeAsState()
+    val activeChild = childStack.active.instance
 
     MaterialTheme(
         colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme(),
     ) {
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             TopAppBar(
-                title = { Text(if (showDemo) "Demo" else "Home") },
+                title = {
+                    Text(
+                        when (activeChild) {
+                            is RootComponent.Child.HomeChild -> "Home"
+                            is RootComponent.Child.DemoChild -> "Demo"
+                        },
+                    )
+                },
                 actions = {
-                    TextButton(onClick = { showDemo = false }) { Text("Home") }
-                    TextButton(onClick = { showDemo = true }) { Text("Demo") }
+                    TextButton(onClick = component::onHomeTabClick) { Text("Home") }
+                    TextButton(onClick = component::onDemoTabClick) { Text("Demo") }
                 },
             )
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                if (showDemo) {
-                    DemoScreen(Modifier.fillMaxWidth())
-                } else {
-                    EmptyScreenContent(Modifier.fillMaxWidth())
+                when (activeChild) {
+                    is RootComponent.Child.HomeChild -> EmptyScreenContent(Modifier.fillMaxWidth())
+                    is RootComponent.Child.DemoChild -> DemoScreen(Modifier.fillMaxWidth())
                 }
             }
         }
