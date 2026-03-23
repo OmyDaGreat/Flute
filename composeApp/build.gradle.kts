@@ -1,11 +1,11 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.dokka)
 }
 
@@ -48,30 +48,16 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
-            implementation(libs.ktor.client.okhttp)
         }
         val desktopMain by getting
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation(libs.ktor.client.okhttp)
-        }
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
         }
         commonMain.dependencies {
-            implementation(libs.compose.ui.tooling.preview)
             implementation(libs.bundles.compose)
 
             implementation(libs.decompose)
             implementation(libs.decompose.extensions.compose)
-            implementation(libs.lifecycle.runtime.compose)
-            implementation(libs.material.icons.core)
-
-            implementation(libs.bundles.ktor)
-
-            implementation(libs.bundles.coil)
-
-            implementation(libs.bundles.malefic)
         }
     }
 }
