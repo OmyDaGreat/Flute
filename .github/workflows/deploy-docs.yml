@@ -1,12 +1,8 @@
-name: Deploy Documentation
+name: Publish Documentation
 
 on:
   push:
     branches: [ main ]
-    paths: [ 'docs-site/**' ]
-  pull_request:
-    branches: [ main ]
-    paths: [ 'docs-site/**' ]
 
 permissions:
   contents: read
@@ -25,31 +21,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
-      
+        uses: actions/checkout@v4
+
       - name: Setup JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-      
+
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
-      
-      - name: Build Documentation with Kobweb
-        run: |
-          cd docs-site
-          ../gradlew kobwebExport
-          cd ..
-      
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Generate KDocs with Dokka
+        run: ./gradlew :composeApp:dokkaHtml
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      
+
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: './docs-site/.kobweb/site'
-      
+          path: './composeApp/build/dokka/html'
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.dokka)
 }
 
 kotlin {
@@ -16,6 +17,8 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
+
+    jvm("desktop")
 
     listOf(
         iosX64(),
@@ -34,18 +37,24 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
         }
+        val desktopMain by getting
+        desktopMain.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(libs.ktor.client.okhttp)
+        }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.components.resources)
+            implementation(libs.compose.components.ui.tooling.preview)
 
-            implementation(libs.navigation.compose)
+            implementation(libs.decompose)
+            implementation(libs.decompose.extensions.compose)
             implementation(libs.lifecycle.runtime.compose)
             implementation(libs.material.icons.core)
 
@@ -55,6 +64,12 @@ kotlin {
 
             implementation(libs.bundles.malefic)
         }
+    }
+}
+
+compose.desktop {
+    application {
+        mainClass = "com.jetbrains.kmpapp.MainKt"
     }
 }
 
