@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -11,10 +10,25 @@ plugins {
 }
 
 kotlin {
-    androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    android {
+        namespace = "com.jetbrains.kmpapp"
+        compileSdk = 36
+        minSdk = 24
+
+        withJava()
+        withHostTestBuilder {}.configure {}
+        withDeviceTestBuilder {
+            sourceSetTreeName = "test"
+        }
+
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
+        }
+
+        packaging {
+            resources {
+                excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            }
         }
     }
 
@@ -33,7 +47,6 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.androidx.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
         }
@@ -46,6 +59,7 @@ kotlin {
             implementation(libs.ktor.client.darwin)
         }
         commonMain.dependencies {
+            implementation(libs.compose.ui.tooling.preview)
             implementation(libs.bundles.compose)
 
             implementation(libs.decompose)
@@ -68,29 +82,6 @@ compose.desktop {
     }
 }
 
-android {
-    namespace = "com.jetbrains.kmpapp"
-    compileSdk = 36
-
-    defaultConfig {
-        applicationId = "com.jetbrains.kmpapp"
-        minSdk = 24
-        //noinspection EditedTargetSdkVersion
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-}
-
 dependencies {
-    debugImplementation(libs.androidx.compose.ui.tooling)
+    androidRuntimeClasspath(libs.compose.ui.tooling)
 }
