@@ -33,7 +33,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Generate KDocs with Dokka
-        run: ./gradlew :composeApp:dokkaGenerate
+        run: ./gradlew :shared:dokkaGenerate
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
