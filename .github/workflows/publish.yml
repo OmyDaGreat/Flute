@@ -17,7 +17,8 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build-debug:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -34,26 +35,53 @@ jobs:
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x gradlew
 
-      - name: Build Android APK
-        run: ./gradlew :composeApp:assemble
+      - name: Build Android Debug APK
+        run: ./gradlew :androidApp:assembleDebug
 
-      - name: Upload Android APK
+      - name: Upload Android Debug APK
         uses: actions/upload-artifact@v7
         with:
-          name: android-apk
-          path: composeApp/build/outputs/apk/debug/*.apk
+          name: android-apk-debug
+          path: androidApp/build/outputs/apk/debug/*.apk
 
-  publish-release:
-    needs: build
+  build-release:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
 
-      - name: Download Android APK
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x gradlew
+
+      - name: Build Android Release APK
+        run: ./gradlew :androidApp:assembleRelease
+
+      - name: Upload Android Release APK
+        uses: actions/upload-artifact@v8
+        with:
+          name: android-apk-release
+          path: androidApp/build/outputs/apk/release/*.apk
+
+  publish-release:
+    needs: build-release
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download Android Release APK
         uses: actions/download-artifact@v8
         with:
-          name: android-apk
+          name: android-apk-release
           path: artifacts/android
 
       - name: Create release
@@ -68,16 +96,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-dev:
-    needs: build
+    needs: build-debug
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
 
-      - name: Download Android APK
+      - name: Download Android Debug APK
         uses: actions/download-artifact@v8
         with:
-          name: android-apk
+          name: android-apk-debug
           path: artifacts/android
 
       - name: Create dev pre-release
