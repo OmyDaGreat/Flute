@@ -85,7 +85,7 @@ jobs:
           path: artifacts/android
 
       - name: Create release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ inputs.version }}
           name: v${{ inputs.version }}
@@ -109,7 +109,7 @@ jobs:
           path: artifacts/android
 
       - name: Create dev pre-release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: v0.0.0-dev.${{ github.run_number }}
           name: Dev Build v0.0.0-dev.${{ github.run_number }}
