@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.jetbrains.kmpapp"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.jetbrains.kmpapp"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
     }
@@ -32,5 +32,6 @@ dependencies {
     implementation(libs.decompose)
     implementation(libs.decompose.extensions.compose)
     implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
     implementation(libs.compose.runtime)
 }

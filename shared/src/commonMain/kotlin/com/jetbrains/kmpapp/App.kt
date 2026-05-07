@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,12 +23,17 @@ import com.jetbrains.kmpapp.screens.EmptyScreenContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App(component: RootComponent) {
+fun App(
+    component: RootComponent,
+    colorScheme: ColorScheme? = null,
+) {
     val childStack by component.stack.subscribeAsState()
     val activeChild = childStack.active.instance
 
+    val appColorScheme = colorScheme ?: if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
+
     MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme(),
+        colorScheme = appColorScheme,
     ) {
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             TopAppBar(
