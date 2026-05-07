@@ -130,7 +130,7 @@ jobs:
         run: ./gradlew :desktopApp:packageDeb :desktopApp:packageRpm :desktopApp:packageAppImage
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: artifacts-${{ matrix.platform }}
           path: |
