@@ -1,4 +1,4 @@
-package com.jetbrains.kmpapp
+package xyz.malefic.flute
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack

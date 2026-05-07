@@ -4,7 +4,6 @@ androidx-activity-compose = "1.13.0"
 compose-material3 = "1.9.0"
 compose-multiplatform = "1.10.3"
 decompose = "3.5.0"
-dokka = "2.2.0"
 kotlin = "2.3.21"
 
 [libraries]
@@ -23,7 +22,6 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 

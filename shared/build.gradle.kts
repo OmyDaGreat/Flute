@@ -6,13 +6,13 @@ plugins {
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinx.serialization)
-    alias(libs.plugins.dokka)
 }
 
 kotlin {
+    jvmToolchain(17)
     android {
-        namespace = "com.jetbrains.kmpapp.shared"
-        compileSdk = 36
+        namespace = "xyz.malefic.flute.shared"
+        compileSdk = 37
         minSdk = 24
 
         androidResources {
@@ -26,7 +26,7 @@ kotlin {
         }
 
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
 
         packaging {
@@ -36,7 +36,11 @@ kotlin {
         }
     }
 
-    jvm("desktop")
+    jvm {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
+    }
 
     listOf(
         iosX64(),
@@ -44,7 +48,7 @@ kotlin {
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "ComposeApp"
+            baseName = "Flute"
             isStatic = true
         }
     }
@@ -53,8 +57,8 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
         }
-        val desktopMain by getting
-        desktopMain.dependencies {
+        val jvmMain by getting
+        jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
         }
         commonMain.dependencies {

@@ -1,4 +1,4 @@
-package com.jetbrains.kmpapp.screens
+package xyz.malefic.flute.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

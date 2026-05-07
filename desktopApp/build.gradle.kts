@@ -5,7 +5,12 @@ plugins {
 }
 
 kotlin {
-    jvm()
+    jvmToolchain(17)
+    jvm {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
+    }
 
     sourceSets {
         jvmMain.dependencies {
@@ -19,6 +24,6 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "com.jetbrains.kmpapp.MainKt"
+        mainClass = "xyz.malefic.flute.MainKt"
     }
 }

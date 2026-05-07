@@ -1,4 +1,4 @@
-package com.jetbrains.kmpapp
+package xyz.malefic.flute
 
 import androidx.compose.runtime.remember
 import androidx.compose.ui.window.ComposeUIViewController

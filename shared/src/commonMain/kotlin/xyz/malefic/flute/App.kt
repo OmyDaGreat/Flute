@@ -1,4 +1,4 @@
-package com.jetbrains.kmpapp
+package xyz.malefic.flute
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -18,8 +18,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.jetbrains.kmpapp.screens.DemoScreen
-import com.jetbrains.kmpapp.screens.EmptyScreenContent
+import xyz.malefic.flute.screens.DemoScreen
+import xyz.malefic.flute.screens.EmptyScreenContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

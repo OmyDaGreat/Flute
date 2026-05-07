@@ -1,4 +1,4 @@
-package com.jetbrains.kmpapp
+package xyz.malefic.flute
 
 import android.os.Build
 import android.os.Bundle
