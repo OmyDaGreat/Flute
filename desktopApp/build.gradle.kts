@@ -11,6 +11,8 @@ kotlin {
         jvmMain.dependencies {
             implementation(projects.shared)
             implementation(compose.desktop.currentOs)
+            implementation(libs.decompose)
+            implementation(libs.decompose.extensions.compose)
         }
     }
 }
