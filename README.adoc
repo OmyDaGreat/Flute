@@ -1,4 +1,4 @@
-image::shared/src/commonMain/composeResources/Flute Repo Banner.png[Flute Template Banner]
+image::shared/src/commonMain/composeResources/files/Flute Repo Banner.png[Flute Template Banner]
 [.custom-toc]
 --
 [cols="1a", frame="none", grid="none"]
