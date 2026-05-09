@@ -107,37 +107,6 @@ jobs:
         if: matrix.platform == 'macos-android'
         run: ./gradlew :androidApp:assembleRelease
 
-      - name: Build iOS Unsigned IPA
-        if: matrix.platform == 'macos-android'
-        run: |
-          set -euo pipefail
-
-          BUILD_DIR=iosApp/build
-          PRODUCT_DIR="$BUILD_DIR/Build/Products/Debug-iphonesimulator"
-          IPA_NAME=Flute-unsigned.ipa
-
-          xcodebuild -project iosApp/iosApp.xcodeproj \
-            -scheme iosApp \
-            -configuration Debug \
-            -sdk iphonesimulator \
-            -derivedDataPath "$BUILD_DIR" \
-            CODE_SIGNING_ALLOWED=NO \
-            build
-
-          APP_PATH="$(find "$PRODUCT_DIR" -maxdepth 1 -name '*.app' -print -quit)"
-          if [ -z "$APP_PATH" ]; then
-            echo "No simulator .app found in $PRODUCT_DIR" >&2
-            exit 1
-          fi
-
-          rm -rf "$BUILD_DIR/Payload" "$BUILD_DIR/$IPA_NAME"
-          mkdir -p "$BUILD_DIR/Payload"
-          cp -R "$APP_PATH" "$BUILD_DIR/Payload/"
-
-          cd "$BUILD_DIR"
-          zip -r Payload.zip Payload
-          mv Payload.zip "$IPA_NAME"
-
       - name: Build Desktop (Mac)
         if: matrix.platform == 'macos-android'
         run: ./gradlew :desktopApp:packageDmg :desktopApp:packagePkg
@@ -159,7 +128,7 @@ jobs:
             androidApp/build/outputs/apk/release/*.apk
             desktopApp/build/compose/binaries/main/dmg/*.dmg
             desktopApp/build/compose/binaries/main/pkg/*.pkg
-            iosApp/build/Flute-unsigned.ipa
+          if-no-files-found: error
 
       - name: Upload Artifacts (Windows)
         if: matrix.platform == 'windows'
@@ -169,6 +138,7 @@ jobs:
           path: |
             desktopApp/build/compose/binaries/main/msi/*.msi
             desktopApp/build/compose/binaries/main/exe/*.exe
+          if-no-files-found: error
 
       - name: Upload Artifacts (Linux)
         if: matrix.platform == 'linux'
@@ -179,6 +149,7 @@ jobs:
             desktopApp/build/compose/binaries/main/deb/*.deb
             desktopApp/build/compose/binaries/main/rpm/*.rpm
             desktopApp/build/compose/binaries/main/appimage/*.AppImage
+          if-no-files-found: error
 
   publish:
     needs: [calculate-version, build]
@@ -193,6 +164,27 @@ jobs:
           path: artifacts
           merge-multiple: true
 
+      - name: Prepare release assets
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets
+
+          # Copy only final distributable artifacts from any downloaded path layout.
+          find artifacts -type f \( \
+            -name '*.apk' -o \
+            -name '*.dmg' -o \
+            -name '*.pkg' -o \
+            -name '*.msi' -o \
+            -name '*.exe' -o \
+            -name '*.deb' -o \
+            -name '*.rpm' -o \
+            -name '*.AppImage' -o \
+            -name '*.appimage' \
+          \) -exec cp '{}' release-assets/ \;
+
+          ls -lah release-assets
+          test -n "$(ls -A release-assets)"
+
       - name: Create Release
         uses: softprops/action-gh-release@v3
         with:
@@ -200,6 +192,6 @@ jobs:
           name: ${{ needs.calculate-version.outputs.is_prerelease == 'true' && 'Dev Build ' || '' }}v${{ needs.calculate-version.outputs.version }}
           prerelease: ${{ needs.calculate-version.outputs.is_prerelease == 'true' }}
           generate_release_notes: true
-          files: artifacts/*
+          files: release-assets/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
