@@ -107,16 +107,36 @@ jobs:
         if: matrix.platform == 'macos-android'
         run: ./gradlew :androidApp:assembleRelease
 
-      - name: Build iOS App
+      - name: Build iOS Unsigned IPA
         if: matrix.platform == 'macos-android'
         run: |
+          set -euo pipefail
+
+          BUILD_DIR=iosApp/build
+          PRODUCT_DIR="$BUILD_DIR/Build/Products/Debug-iphonesimulator"
+          IPA_NAME=Flute-unsigned.ipa
+
           xcodebuild -project iosApp/iosApp.xcodeproj \
             -scheme iosApp \
             -configuration Debug \
-            -sdk iphoneos \
-            -derivedDataPath iosApp/build \
+            -sdk iphonesimulator \
+            -derivedDataPath "$BUILD_DIR" \
             CODE_SIGNING_ALLOWED=NO \
             build
+
+          APP_PATH="$(find "$PRODUCT_DIR" -maxdepth 1 -name '*.app' -print -quit)"
+          if [ -z "$APP_PATH" ]; then
+            echo "No simulator .app found in $PRODUCT_DIR" >&2
+            exit 1
+          fi
+
+          rm -rf "$BUILD_DIR/Payload" "$BUILD_DIR/$IPA_NAME"
+          mkdir -p "$BUILD_DIR/Payload"
+          cp -R "$APP_PATH" "$BUILD_DIR/Payload/"
+
+          cd "$BUILD_DIR"
+          zip -r Payload.zip Payload
+          mv Payload.zip "$IPA_NAME"
 
       - name: Build Desktop (Mac)
         if: matrix.platform == 'macos-android'
@@ -134,6 +154,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: artifacts-${{ matrix.platform }}
+          if-no-files-found: error
           path: |
             androidApp/build/outputs/apk/release/*.apk
             desktopApp/build/compose/binaries/main/dmg/*.dmg
@@ -143,7 +164,7 @@ jobs:
             desktopApp/build/compose/binaries/main/deb/*.deb
             desktopApp/build/compose/binaries/main/rpm/*.rpm
             desktopApp/build/compose/binaries/main/appimage/*.AppImage
-            iosApp/build/Build/Products/Debug-iphoneos/*.app
+            iosApp/build/Flute-unsigned.ipa
 
   publish:
     needs: [calculate-version, build]
@@ -165,6 +186,6 @@ jobs:
           name: ${{ needs.calculate-version.outputs.is_prerelease == 'true' && 'Dev Build ' || '' }}v${{ needs.calculate-version.outputs.version }}
           prerelease: ${{ needs.calculate-version.outputs.is_prerelease == 'true' }}
           generate_release_notes: true
-          files: artifacts/**/*
+          files: artifacts/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
