@@ -48,7 +48,7 @@ kotlin {
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "Flute"
+            baseName = "shared"
             isStatic = true
         }
     }

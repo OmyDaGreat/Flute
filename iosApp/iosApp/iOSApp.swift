@@ -1,5 +1,5 @@
 import SwiftUI
-import Flute
+import shared
 
 @main
 struct iOSApp: App {
