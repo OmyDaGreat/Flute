@@ -12,7 +12,10 @@ android {
         applicationId = "xyz.malefic.kmpapp"
         minSdk = 24
         targetSdk = 37
-        versionCode = providers.gradleProperty("appVersionCode").map(String::toInt).orElse(1).get()
+        versionCode = providers.gradleProperty("appVersionCode")
+            .map { it.toIntOrNull() ?: 1 }
+            .orElse(1)
+            .get()
         versionName = rootProject.version.toString()
     }
 
