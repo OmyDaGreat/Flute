@@ -45,8 +45,18 @@ jobs:
           # Handle cases where version might have suffixes (like -dev.1)
           BASE_VERSION=$(echo "$VERSION" | cut -d'-' -f1)
 
-          # Split into parts
+          # Fall back to 1.0.0 if the tag is not plain MAJOR.MINOR.PATCH
+          if ! [[ "$BASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            BASE_VERSION="1.0.0"
+          fi
+
+          # Split into parts and enforce MAJOR >= 1
           IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE_VERSION"
+          if [ "$MAJOR" -lt 1 ]; then
+            MAJOR=1
+            MINOR=0
+            PATCH=0
+          fi
 
           BUMP="${{ github.event.inputs.version_bump }}"
           if [ "${{ github.event_name }}" == "push" ]; then
