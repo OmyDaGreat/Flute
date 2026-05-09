@@ -37,7 +37,7 @@ compose.desktop {
             )
             packageName = "Flute"
             packageVersion = providers.gradleProperty("packageVersion")
-                .orElse(rootProject.version.toString().substringBefore('-'))
+                .orElse("1.0.0")
                 .get()
         }
     }

@@ -36,8 +36,8 @@ jobs:
 
       - id: calc
         run: |
-          # Get latest tag, or v0.0.0
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          # Get latest tag, or v1.0.0 (start from 1.0.0 to avoid MAJOR=0 issues)
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")
           echo "Latest tag: $LATEST_TAG"
 
           # Remove 'v' prefix
