@@ -150,21 +150,35 @@ jobs:
         if: matrix.platform == 'linux'
         run: ./gradlew :desktopApp:packageDeb :desktopApp:packageRpm :desktopApp:packageAppImage
 
-      - name: Upload Artifacts
+      - name: Upload Artifacts (macOS & Android)
+        if: matrix.platform == 'macos-android'
         uses: actions/upload-artifact@v7
         with:
           name: artifacts-${{ matrix.platform }}
-          if-no-files-found: error
           path: |
             androidApp/build/outputs/apk/release/*.apk
             desktopApp/build/compose/binaries/main/dmg/*.dmg
             desktopApp/build/compose/binaries/main/pkg/*.pkg
+            iosApp/build/Flute-unsigned.ipa
+
+      - name: Upload Artifacts (Windows)
+        if: matrix.platform == 'windows'
+        uses: actions/upload-artifact@v7
+        with:
+          name: artifacts-${{ matrix.platform }}
+          path: |
             desktopApp/build/compose/binaries/main/msi/*.msi
             desktopApp/build/compose/binaries/main/exe/*.exe
+
+      - name: Upload Artifacts (Linux)
+        if: matrix.platform == 'linux'
+        uses: actions/upload-artifact@v7
+        with:
+          name: artifacts-${{ matrix.platform }}
+          path: |
             desktopApp/build/compose/binaries/main/deb/*.deb
             desktopApp/build/compose/binaries/main/rpm/*.rpm
             desktopApp/build/compose/binaries/main/appimage/*.AppImage
-            iosApp/build/Flute-unsigned.ipa
 
   publish:
     needs: [calculate-version, build]
