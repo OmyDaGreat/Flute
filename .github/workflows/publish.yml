@@ -26,6 +26,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.calc.outputs.version }}
+      base_version: ${{ steps.calc.outputs.base_version }}
+      version_code: ${{ steps.calc.outputs.version_code }}
       is_prerelease: ${{ steps.calc.outputs.is_prerelease }}
     steps:
       - uses: actions/checkout@v6
@@ -37,20 +39,20 @@ jobs:
           # Get latest tag, or v0.0.0
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           echo "Latest tag: $LATEST_TAG"
-          
+
           # Remove 'v' prefix
           VERSION=${LATEST_TAG#v}
           # Handle cases where version might have suffixes (like -dev.1)
-          BASE_VERSION=$(echo $VERSION | cut -d'-' -f1)
-          
+          BASE_VERSION=$(echo "$VERSION" | cut -d'-' -f1)
+
           # Split into parts
           IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE_VERSION"
-          
+
           BUMP="${{ github.event.inputs.version_bump }}"
           if [ "${{ github.event_name }}" == "push" ]; then
             BUMP="none"
           fi
-          
+
           if [ "$BUMP" == "major" ]; then
             MAJOR=$((MAJOR + 1))
             MINOR=0
@@ -61,18 +63,21 @@ jobs:
           elif [ "$BUMP" == "patch" ]; then
             PATCH=$((PATCH + 1))
           fi
-          
-          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
-          
+
+          BASE_VERSION="$MAJOR.$MINOR.$PATCH"
+          NEW_VERSION="$BASE_VERSION"
+
           if [ "$BUMP" == "none" ] || [ "${{ github.event_name }}" == "push" ]; then
             NEW_VERSION="$NEW_VERSION-dev.${{ github.run_number }}"
             IS_PRERELEASE=true
           else
             IS_PRERELEASE=false
           fi
-          
-          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+
+          echo "version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "base_version=$BASE_VERSION" >> "$GITHUB_OUTPUT"
+          echo "version_code=${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          echo "is_prerelease=$IS_PRERELEASE" >> "$GITHUB_OUTPUT"
           echo "Calculated version: $NEW_VERSION"
 
   build:
@@ -103,21 +108,48 @@ jobs:
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x gradlew
 
+      - name: Show effective version info
+        run: |
+          echo "appVersion=${{ needs.calculate-version.outputs.version }}"
+          echo "packageVersion=${{ needs.calculate-version.outputs.base_version }}"
+          echo "appVersionCode=${{ needs.calculate-version.outputs.version_code }}"
+          echo "isPrerelease=${{ needs.calculate-version.outputs.is_prerelease }}"
+
       - name: Build Android APK
         if: matrix.platform == 'macos-android'
-        run: ./gradlew :androidApp:assembleRelease
+        run: >-
+          ./gradlew
+          -PappVersion=${{ needs.calculate-version.outputs.version }}
+          -PpackageVersion=${{ needs.calculate-version.outputs.base_version }}
+          -PappVersionCode=${{ needs.calculate-version.outputs.version_code }}
+          :androidApp:assembleRelease
 
       - name: Build Desktop (Mac)
         if: matrix.platform == 'macos-android'
-        run: ./gradlew :desktopApp:packageDmg :desktopApp:packagePkg
+        run: >-
+          ./gradlew
+          -PappVersion=${{ needs.calculate-version.outputs.version }}
+          -PpackageVersion=${{ needs.calculate-version.outputs.base_version }}
+          -PappVersionCode=${{ needs.calculate-version.outputs.version_code }}
+          :desktopApp:packageDmg :desktopApp:packagePkg
 
       - name: Build Desktop (Windows)
         if: matrix.platform == 'windows'
-        run: ./gradlew :desktopApp:packageMsi :desktopApp:packageExe
+        run: >-
+          ./gradlew
+          -PappVersion=${{ needs.calculate-version.outputs.version }}
+          -PpackageVersion=${{ needs.calculate-version.outputs.base_version }}
+          -PappVersionCode=${{ needs.calculate-version.outputs.version_code }}
+          :desktopApp:packageMsi :desktopApp:packageExe
 
       - name: Build Desktop (Linux)
         if: matrix.platform == 'linux'
-        run: ./gradlew :desktopApp:packageDeb :desktopApp:packageRpm :desktopApp:packageAppImage
+        run: >-
+          ./gradlew
+          -PappVersion=${{ needs.calculate-version.outputs.version }}
+          -PpackageVersion=${{ needs.calculate-version.outputs.base_version }}
+          -PappVersionCode=${{ needs.calculate-version.outputs.version_code }}
+          :desktopApp:packageDeb :desktopApp:packageRpm :desktopApp:packageAppImage
 
       - name: Upload Artifacts (macOS & Android)
         if: matrix.platform == 'macos-android'

@@ -36,7 +36,9 @@ compose.desktop {
                 org.jetbrains.compose.desktop.application.dsl.TargetFormat.AppImage
             )
             packageName = "Flute"
-            packageVersion = "1.0.0"
+            packageVersion = providers.gradleProperty("packageVersion")
+                .orElse(rootProject.version.toString().substringBefore('-'))
+                .get()
         }
     }
 }
