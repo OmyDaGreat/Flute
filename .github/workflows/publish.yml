@@ -122,53 +122,47 @@ jobs:
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x gradlew
 
-      - name: Export version values
-        run: |
-          echo "APP_VERSION=${{ needs.calculate-version.outputs.version }}" >> "$GITHUB_ENV"
-          echo "PACKAGE_VERSION=${{ needs.calculate-version.outputs.base_version }}" >> "$GITHUB_ENV"
-          echo "APP_VERSION_CODE=${{ needs.calculate-version.outputs.version_code }}" >> "$GITHUB_ENV"
-
       - name: Show effective version info
         run: |
-          echo "appVersion=$APP_VERSION"
-          echo "packageVersion=$PACKAGE_VERSION"
-          echo "appVersionCode=$APP_VERSION_CODE"
+          echo "appVersion=${{ needs.calculate-version.outputs.version }}"
+          echo "packageVersion=${{ needs.calculate-version.outputs.base_version }}"
+          echo "appVersionCode=${{ needs.calculate-version.outputs.version_code }}"
           echo "isPrerelease=${{ needs.calculate-version.outputs.is_prerelease }}"
 
       - name: Build Android APK
         if: matrix.platform == 'macos-android'
         run: >-
           ./gradlew
-          "-PappVersion=$APP_VERSION"
-          "-PpackageVersion=$PACKAGE_VERSION"
-          "-PappVersionCode=$APP_VERSION_CODE"
+          "-PappVersion=${{ needs.calculate-version.outputs.version }}"
+          "-PpackageVersion=${{ needs.calculate-version.outputs.base_version }}"
+          "-PappVersionCode=${{ needs.calculate-version.outputs.version_code }}"
           :androidApp:assembleRelease
 
       - name: Build Desktop (Mac)
         if: matrix.platform == 'macos-android'
         run: >-
           ./gradlew
-          "-PappVersion=$APP_VERSION"
-          "-PpackageVersion=$PACKAGE_VERSION"
-          "-PappVersionCode=$APP_VERSION_CODE"
+          "-PappVersion=${{ needs.calculate-version.outputs.version }}"
+          "-PpackageVersion=${{ needs.calculate-version.outputs.base_version }}"
+          "-PappVersionCode=${{ needs.calculate-version.outputs.version_code }}"
           :desktopApp:packageDmg :desktopApp:packagePkg
 
       - name: Build Desktop (Windows)
         if: matrix.platform == 'windows'
         run: >-
           ./gradlew
-          "-PappVersion=$APP_VERSION"
-          "-PpackageVersion=$PACKAGE_VERSION"
-          "-PappVersionCode=$APP_VERSION_CODE"
+          "-PappVersion=${{ needs.calculate-version.outputs.version }}"
+          "-PpackageVersion=${{ needs.calculate-version.outputs.base_version }}"
+          "-PappVersionCode=${{ needs.calculate-version.outputs.version_code }}"
           :desktopApp:packageMsi :desktopApp:packageExe
 
       - name: Build Desktop (Linux)
         if: matrix.platform == 'linux'
         run: >-
           ./gradlew
-          "-PappVersion=$APP_VERSION"
-          "-PpackageVersion=$PACKAGE_VERSION"
-          "-PappVersionCode=$APP_VERSION_CODE"
+          "-PappVersion=${{ needs.calculate-version.outputs.version }}"
+          "-PpackageVersion=${{ needs.calculate-version.outputs.base_version }}"
+          "-PappVersionCode=${{ needs.calculate-version.outputs.version_code }}"
           :desktopApp:packageDeb :desktopApp:packageRpm :desktopApp:packageAppImage
 
       - name: Upload Artifacts (macOS & Android)
