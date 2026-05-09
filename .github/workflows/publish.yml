@@ -112,10 +112,11 @@ jobs:
         run: |
           xcodebuild -project iosApp/iosApp.xcodeproj \
             -scheme iosApp \
-            -configuration Release \
+            -configuration Debug \
             -sdk iphoneos \
             -derivedDataPath iosApp/build \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            build
 
       - name: Build Desktop (Mac)
         if: matrix.platform == 'macos-android'
@@ -142,7 +143,7 @@ jobs:
             desktopApp/build/compose/binaries/main/deb/*.deb
             desktopApp/build/compose/binaries/main/rpm/*.rpm
             desktopApp/build/compose/binaries/main/appimage/*.AppImage
-            iosApp/build/Build/Products/Release-iphoneos/*.app
+            iosApp/build/Build/Products/Debug-iphoneos/*.app
 
   publish:
     needs: [calculate-version, build]
