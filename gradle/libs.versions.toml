@@ -5,6 +5,7 @@ compose-material3 = "1.9.0"
 compose-multiplatform = "1.11.0"
 decompose = "3.5.0"
 kotlin = "2.3.21"
+octicons = "1.1.1"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity-compose" }
@@ -16,6 +17,7 @@ compose-ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref = "c
 compose-components-resources = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "compose-multiplatform" }
 decompose = { group = "com.arkivanov.decompose", name = "decompose", version.ref = "decompose" }
 decompose-extensions-compose = { group = "com.arkivanov.decompose", name = "extensions-compose", version.ref = "decompose" }
+souza-octicons = { group = "br.com.devsrsouza.compose.icons", name = "octicons", version.ref = "octicons" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

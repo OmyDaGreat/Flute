@@ -43,7 +43,6 @@ kotlin {
     }
 
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
@@ -63,6 +62,8 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(libs.bundles.compose)
+
+            implementation(libs.souza.octicons)
 
             implementation(libs.decompose)
             implementation(libs.decompose.extensions.compose)

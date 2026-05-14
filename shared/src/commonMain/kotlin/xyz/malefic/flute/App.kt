@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -18,6 +19,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import compose.icons.Octicons
+import compose.icons.octicons.Beaker24
+import compose.icons.octicons.Home24
 import xyz.malefic.flute.screens.DemoScreen
 import xyz.malefic.flute.screens.EmptyScreenContent
 
@@ -46,8 +50,8 @@ fun App(
                     )
                 },
                 actions = {
-                    TextButton(onClick = component::onHomeTabClick) { Text("Home") }
-                    TextButton(onClick = component::onDemoTabClick) { Text("Demo") }
+                    TextButton(onClick = component::onHomeTabClick) { Icon(Octicons.Home24, "Home") }
+                    TextButton(onClick = component::onDemoTabClick) { Icon(Octicons.Beaker24, "Demo") }
                 },
             )
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
