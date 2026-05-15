@@ -16,6 +16,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
@@ -32,7 +33,7 @@ fun App(
     colorScheme: ColorScheme? = null,
 ) {
     val childStack by component.stack.subscribeAsState()
-    val activeChild = childStack.active.instance
+    val activeScreen = childStack.active.instance
 
     val appColorScheme = colorScheme ?: if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
 
@@ -42,24 +43,29 @@ fun App(
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             TopAppBar(
                 title = {
-                    Text(
-                        when (activeChild) {
-                            is RootComponent.Child.HomeChild -> "Home"
-                            is RootComponent.Child.DemoChild -> "Demo"
-                        },
-                    )
+                    Text(activeScreen.title)
                 },
                 actions = {
-                    TextButton(onClick = component::onHomeTabClick) { Icon(Octicons.Home24, "Home") }
-                    TextButton(onClick = component::onDemoTabClick) { Icon(Octicons.Beaker24, "Demo") }
+                    component.topLevelScreens.forEach { screen ->
+                        TextButton(onClick = { component.navigateTo(screen) }) {
+                            Icon(screen.icon, screen.title)
+                        }
+                    }
                 },
             )
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                when (activeChild) {
-                    is RootComponent.Child.HomeChild -> EmptyScreenContent(Modifier.fillMaxWidth())
-                    is RootComponent.Child.DemoChild -> DemoScreen(Modifier.fillMaxWidth())
+                when (activeScreen) {
+                    RootComponent.Screen.Home -> EmptyScreenContent(Modifier.fillMaxWidth())
+                    RootComponent.Screen.Demo -> DemoScreen(Modifier.fillMaxWidth())
                 }
             }
         }
     }
 }
+
+private val RootComponent.Screen.icon: ImageVector
+    get() =
+        when (this) {
+            RootComponent.Screen.Home -> Octicons.Home24
+            RootComponent.Screen.Demo -> Octicons.Beaker24
+        }

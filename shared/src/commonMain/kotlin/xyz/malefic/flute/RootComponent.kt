@@ -9,16 +9,16 @@ import com.arkivanov.decompose.value.Value
 import kotlinx.serialization.Serializable
 
 interface RootComponent {
-    val stack: Value<ChildStack<*, Child>>
+    val stack: Value<ChildStack<*, Screen>>
 
-    fun onHomeTabClick()
+    val topLevelScreens: List<Screen>
 
-    fun onDemoTabClick()
+    fun navigateTo(screen: Screen)
 
-    sealed class Child {
-        class HomeChild : Child()
-
-        class DemoChild : Child()
+    @Serializable
+    enum class Screen(val title: String) {
+        Home("Home"),
+        Demo("Demo"),
     }
 }
 
@@ -26,36 +26,27 @@ class DefaultRootComponent(
     componentContext: ComponentContext,
 ) : RootComponent,
     ComponentContext by componentContext {
-    @Serializable
-    sealed class Config {
-        @Serializable
-        data object Home : Config()
+    private val navigation = StackNavigation<RootComponent.Screen>()
 
-        @Serializable
-        data object Demo : Config()
-    }
-
-    private val navigation = StackNavigation<Config>()
-
-    override val stack: Value<ChildStack<*, RootComponent.Child>> =
+    override val stack: Value<ChildStack<*, RootComponent.Screen>> =
         childStack(
             source = navigation,
-            serializer = Config.serializer(),
-            initialConfiguration = Config.Home,
+            serializer = RootComponent.Screen.serializer(),
+            initialConfiguration = RootComponent.Screen.Home,
             handleBackButton = true,
-            childFactory = ::child,
+            childFactory = ::screenFactory,
         )
 
-    private fun child(
-        config: Config,
+    override val topLevelScreens: List<RootComponent.Screen> =
+        listOf(
+            RootComponent.Screen.Home,
+            RootComponent.Screen.Demo,
+        )
+
+    private fun screenFactory(
+        screen: RootComponent.Screen,
         @Suppress("UNUSED_PARAMETER") componentContext: ComponentContext,
-    ): RootComponent.Child =
-        when (config) {
-            is Config.Home -> RootComponent.Child.HomeChild()
-            is Config.Demo -> RootComponent.Child.DemoChild()
-        }
+    ): RootComponent.Screen = screen
 
-    override fun onHomeTabClick() = navigation.bringToFront(Config.Home)
-
-    override fun onDemoTabClick() = navigation.bringToFront(Config.Demo)
+    override fun navigateTo(screen: RootComponent.Screen) = navigation.bringToFront(screen)
 }
