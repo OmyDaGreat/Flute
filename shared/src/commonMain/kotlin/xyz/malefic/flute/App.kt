@@ -16,13 +16,9 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import compose.icons.Octicons
-import compose.icons.octicons.Beaker24
-import compose.icons.octicons.Home24
 import xyz.malefic.flute.screens.DemoScreen
 import xyz.malefic.flute.screens.EmptyScreenContent
 
@@ -62,10 +58,3 @@ fun App(
         }
     }
 }
-
-private val RootComponent.Screen.icon: ImageVector
-    get() =
-        when (this) {
-            RootComponent.Screen.Home -> Octicons.Home24
-            RootComponent.Screen.Demo -> Octicons.Beaker24
-        }
