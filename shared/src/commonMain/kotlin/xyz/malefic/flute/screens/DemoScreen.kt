@@ -27,8 +27,6 @@ fun DemoScreen(modifier: Modifier = Modifier) {
         Arrangement.spacedBy(12.dp),
         Alignment.CenterHorizontally,
     ) {
-        Text("Demo page")
-
         TextField(
             value = name,
             onValueChange = { name = it },
