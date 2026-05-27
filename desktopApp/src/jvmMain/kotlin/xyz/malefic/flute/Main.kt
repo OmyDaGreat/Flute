@@ -12,11 +12,12 @@ fun main() {
     val lifecycle = LifecycleRegistry()
 
     application {
-        val root = remember {
-            DefaultRootComponent(
-                componentContext = DefaultComponentContext(lifecycle = lifecycle),
-            )
-        }
+        val root =
+            remember {
+                DefaultRootComponent(
+                    componentContext = DefaultComponentContext(lifecycle = lifecycle),
+                )
+            }
 
         val windowState = rememberWindowState()
         LifecycleController(lifecycle, windowState)
@@ -24,7 +25,7 @@ fun main() {
         Window(
             onCloseRequest = ::exitApplication,
             state = windowState,
-            title = "MaleficMobile",
+            title = "Flute",
         ) {
             App(root)
         }

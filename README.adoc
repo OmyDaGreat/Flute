@@ -1,28 +1,9 @@
-image::shared/src/commonMain/composeResources/files/Flute Repo Banner.png[Flute Template Banner]
-[.custom-toc]
---
-[cols="1a", frame="none", grid="none"]
-|===
-| **Table of Contents**
+image::shared/src/commonMain/composeResources/files/Flute Repo Banner.png[Flute Template]
 
-* <<introduction,Introduction>>
-* <<project-structure,Project Structure>>
-* <<customize,Customizing Your App>>
-  ** <<change-name,Change the App Name & Icon>>
-  ** <<theme,Update Colors & Theme>>
-  ** <<content,Build Your Content>>
-* <<example,Example: Adding a Button>>
-* <<help,Need Help?>>
-* <<license,License>>
-|===
---
-
-[id="introduction"]
 == Introduction
 
 Flute is a Kotlin Multiplatform project combining Desktop and Mobile app development with both shared ui and logic (though separable). Unlike the JetBrains templates, it provides a more updated and clean structure, with a small and easily replaceable initial setup.
 
-[id="project-structure"]
 == Project Structure
 [source,plaintext]
 ----
@@ -59,29 +40,28 @@ Flute/
 └── README.adoc                                   # Project documentation
 ----
 
-[id="customize"]
-== Customizing Your App
+== Setup Guide
 
-[id="change-name"]
+=== 0. Initials
+
+* I'd suggest using Android Studio rather than something like IntelliJ since the former supports more of the Android-specific features and updates, overall making it easier to manage the app.
+
 === 1. Change the App Name & Icon
 
 * Lowk this step is the most annoying, so I'd suggest just searching for every instance of "Flute" and replacing it along with the package path.
 * Replace icons in `androidApp/src/main/res/mipmap-*`.
 
-[id="theme"]
 === 2. Update Colors & Theme
 
 * Update theming in `shared/src/commonMain/kotlin/xyz/malefic/flute/App.kt`.
 * Also note that the Android app uses the cool dynamic theming from Material You, so you can remove that if you want a more consistent cross-platform look.
 
-[id="content"]
 === 3. Build Your Content
 
 * Edit `shared/src/commonMain/kotlin/xyz/malefic/flute/EmptyScreen.kt` or `shared/src/commonMain/kotlin/xyz/malefic/flute/DemoScreen.kt`.
 * Add new screens in `shared/src/commonMain/kotlin/xyz/malefic/flute/` and wire them into `App.kt`.
 
-[id="example"]
-== Example: Adding a Button
+==== Example: Adding a Button
 
 [source,kotlin]
 ----
@@ -97,12 +77,13 @@ fun MainScreen() {
 }
 ----
 
-[id="help"]
+=== 4. Run Your App
+* I'd recommend running the Desktop app for testing since it's the easiest to both set up and iterate changes on. The task is `:desktopAutoReload`, and you can run it through the Gradle tool window or just in the terminal with `./gradlew :desktopAutoReload`.
+
 == Need Help?
 
 * Reach out to me! You can find all my info on my GitHub profile: https://github.com/OmyDaGreat[OmyDaGreat].
 
-[id="license"]
 == License
 
 This project is licensed under the MIT License. See link:LICENSE[] for details.

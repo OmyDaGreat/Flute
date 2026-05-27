@@ -9,3 +9,11 @@ plugins {
 
 // Centralized app version, overridable from CI via -PappVersion.
 version = providers.gradleProperty("appVersion").orElse("1.0.0-dev.local").get()
+
+tasks.register("desktopAutoReload", Exec::class) {
+    group = "run"
+    description = "Runs the desktop application with auto-reload"
+    executable = "./gradlew"
+    args = listOf(":desktopApp:hotRunJvm", "--auto")
+    workingDir = rootDir
+}
