@@ -84,6 +84,10 @@ fun MainScreen() {
 
 * Reach out to me! You can find all my info on my GitHub profile: https://github.com/OmyDaGreat[OmyDaGreat].
 
+== Declarations
+
+* This project has minimal AI usage, for some boilerplate code and tedious tasks. All AI-generated code is reviewed and edited by me, so it should be up to reasonable standards.
+
 == License
 
 This project is licensed under the MIT License. See link:LICENSE[] for details.
